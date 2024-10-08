@@ -3,11 +3,13 @@ import PerformanceMetric from "../models/PerformanceMetric.model.js";
 
 export const GetAllPerformanceMetrics = async (req, res) => {
 	try {
+
+		console.log("idf  " , req.query);
+		// console.log("idf  ");
 		const { employee_id, course_id } = req.query;
 
-		// console.log("Received employee_id:", employee_id, "course_id:", course_id);
+		console.log("Received employee_id:", employee_id, "course_id:", course_id);
 
-		// Check if both employee_id and course_id are provided
 		if (!employee_id || !course_id) {
 			return res
 				.status(400)
@@ -31,16 +33,11 @@ export const GetAllPerformanceMetrics = async (req, res) => {
 
 
 export const GetAllPerformanceMetricById = async (req, res) => {
-	const { employeeID } = req.params;
-	// console.log("Received employeeID:", employeeID);
-
+	
+	console.log("tishis s")
 	try {
-		// Check if the employeeID is a valid ObjectId
 		
-		// Use mongoose.Types.ObjectId to convert the string to ObjectId
-		const employee = await PerformanceMetric.find({
-			employee_id: employeeID,
-		});
+		const employee = await PerformanceMetric.find();
 
 		if (!employee) {
 			console.log("Fail")

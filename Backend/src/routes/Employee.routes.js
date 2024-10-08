@@ -8,7 +8,7 @@ import {GetAllEmployees,CreateEmployee, GetAllEmployeesById } from "../controlle
 
 
 router.get('/', GetAllEmployees);
-router.get('/:employeeID', GetAllEmployeesById);
+router.get('/this/', GetAllEmployeesById);
 router.post('/', CreateEmployee);
 // Add routes for update and delete
 

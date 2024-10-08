@@ -12,105 +12,111 @@ import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 
 function Employee() {
-	const [addEmp, setAddEmp] = useState(false);
-	const [totalEmp, setTotalEmployee] = useState(0);
-	const [totalCourse, setTotalCourse] = useState(0);
-	const [totalTrainer, setTotalTrainers] = useState(0);
-	const [users, setUser] = useState([]);
-	const [globalFilter, setGlobalFilter] = useState('');
-	const [empInfo , setEmpInfo] = useState(false);
-	const [empPerformanceInfo , setEmpPerformanceInfo] = useState([]);
-	
-	const [employeeData, setEmployeeData] = useState({
-		name: "",
-		email: "",
-		password: "",
-		phone_num: "",
-		designation: "",
-		hireDate: "",
-	});
+    const [addEmp, setAddEmp] = useState(false);
+    const [totalEmp, setTotalEmployee] = useState(0);
+    const [totalCourse, setTotalCourse] = useState(0);
+    const [totalTrainer, setTotalTrainers] = useState(0);
+    const [users, setUser] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [empInfo, setEmpInfo] = useState(false);
+    const [empPerformanceInfo, setEmpPerformanceInfo] = useState([]);
+    const [courses, setCourses] = useState([]);
+    const [selectedCourse, setSelectedCourse] = useState(null);
+    const [metrics, setMetrics] = useState({
+        quiz_score: 0,
+        discipline: 0,
+        punctuality: 0,
+        teamwork: 0,
+        communication: 0,
+        problem_solving: 0,
+        retention_score: 0
+    });
 
-	const addEmployee = () => {
-		setAddEmp(!addEmp);
-	}
+    const [employeeData, setEmployeeData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        phone_num: "",
+        designation: "",
+        hireDate: "",
+    });
 
-	const handleChange = (e) => {
-		const { id, value } = e.target;
-		setEmployeeData({ ...employeeData, [id]: value });
-	};
+    const addEmployee = () => {
+        setAddEmp(!addEmp);
+    }
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
+    const handleChange = (e) => {
+        const { id, value } = e.target;
+        setEmployeeData({ ...employeeData, [id]: value });
+    };
 
-		try {
-			const response = await axios.post(
-				"http://localhost:4000/api/v1/EmployeeRoutes",
-				employeeData,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
-			setAddEmp(false);
-			fetchEmployees();
-		} catch (error) {
-			console.error("Error adding employee:", error);
-		}
-	};
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-	const fetchEmployees = async () => {
-		try {
-			const responseEmp = await axios.get('http://localhost:4000/api/v1/EmployeeRoutes');
-			const responseTrainer = await axios.get('http://localhost:4000/api/v1/TrainerRoutes');
-			const responseCourse = await axios.get('http://localhost:4000/api/v1/CourseRoutes');
-			
-			if (responseEmp.data && Array.isArray(responseEmp.data)) {
-				setUser(responseEmp.data);
-				setTotalEmployee(responseEmp.data.length);
-			}
-			if (responseTrainer.data && Array.isArray(responseTrainer.data)) {
-				setTotalTrainers(responseTrainer.data.length);
-			}
-			if (responseCourse.data && Array.isArray(responseCourse.data)) {
-				setTotalCourse(responseCourse.data.length);
-			}
-		} catch (error) {
-			console.error('Error fetching data:', error);
-			setTotalEmployee(0);
-			setTotalCourse(0);
-			setTotalTrainers(0);
-		}
-	};
-	
-	useEffect(() => {
-		fetchEmployees();
-	}, []);
-	
-	const handleEdit = async (rowData) => {
-		const empId = rowData._id; // Ensure this is the correct identifier
-		console.log("Editing employee:", empId);
-		try {
-			const response = await axios.get(
-				`http://localhost:4000/api/v1/PerformanceMetricRoutes/${empId}`
-			);
+        try {
+            const response = await axios.post(
+                "http://localhost:4000/api/v1/EmployeeRoutes",
+                employeeData,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+            setAddEmp(false);
+            fetchEmployees();
+        } catch (error) {
+            console.error("Error adding employee:", error);
+        }
+    };
 
-			console.log("Res " , response.data.data);
-			if(response.data.data.length != 0 ){ // To access the data parameter inside the response.data 
-				setEmpInfo(!empInfo)
-			}
-			console.log(response.data);
-			return { data: response.data };
-		} catch (err) {
-			console.log("Error:", err);
-		}
-	};
+    const fetchEmployees = async () => {
+        try {
+            const responseEmp = await axios.get('http://localhost:4000/api/v1/EmployeeRoutes');
+            const responseTrainer = await axios.get('http://localhost:4000/api/v1/TrainerRoutes');
+            const responseCourse = await axios.get('http://localhost:4000/api/v1/CourseRoutes');
+            
+            if (responseEmp.data && Array.isArray(responseEmp.data)) {
+                setUser(responseEmp.data);
+                setTotalEmployee(responseEmp.data.length);
+            }
+            if (responseTrainer.data && Array.isArray(responseTrainer.data)) {
+                setTotalTrainers(responseTrainer.data.length);
+            }
+            if (responseCourse.data && Array.isArray(responseCourse.data)) {
+                setTotalCourse(responseCourse.data.length);
+                setCourses(responseCourse.data); // Set courses for the dropdown
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            setTotalEmployee(0);
+            setTotalCourse(0);
+            setTotalTrainers(0);
+        }
+    };
 
-		
-		
+    useEffect(() => {
+        fetchEmployees();
+    }, []);
 
-	const buttonBodyTemplate = (rowData) => {
-		// setEmpInfo(!empInfo);
+    const handleEdit = async (rowData) => {
+        const empId = rowData._id;
+        console.log("Editing employee:", empId);
+        try {
+            const response = await axios.get(
+                `http://localhost:4000/api/v1/PerformanceMetricRoutes/${empId}`
+            );
+            console.log("Res ", response.data.data);
+            if (response.data.data.length !== 0) {
+                setEmpInfo(true);
+                setEmpPerformanceInfo(response.data.data);
+            }
+        } catch (err) {
+            console.log("Error:", err);
+        }
+    };
+
+    const buttonBodyTemplate = (rowData) => {
         return (
             <Button
                 icon="pi pi-pencil"
@@ -120,38 +126,81 @@ function Employee() {
         );
     };
 
-	const renderHeader = () => {
-		return (
-			<div className="flex justify-between items-center">
-				<span className="text-xl font-semibold text-blue-800">Employee List</span>
-				<span className="p-input-icon-left">
-					<i className="pi pi-search" />
-					<InputText
-						value={globalFilter}
-						onChange={(e) => setGlobalFilter(e.target.value)}
-						placeholder="Search employee..."
-						className="p-2 w-64 focus:border-blue-300 focus:ring-blue-200"
-					/>
-				</span>
-			</div>
-		);
-	};
+    const renderHeader = () => {
+        return (
+            <div className="flex justify-between items-center">
+                <span className="text-xl font-semibold text-blue-800">Employee List</span>
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText
+                        value={globalFilter}
+                        onChange={(e) => setGlobalFilter(e.target.value)}
+                        placeholder="Search employee..."
+                        className="p-2 w-64 focus:border-blue-300 focus:ring-blue-200"
+                    />
+                </span>
+            </div>
+        );
+    };
 
-	const header = renderHeader();
+    const header = renderHeader();
 
-	const handleEmpInfo = ()=>{
-		console.log("button action clicked")
-	}
-	return (
-		<div className="w-full h-full relative bg-blue-50">
-			{empInfo && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-					<div className="absolute left-1/4 top-1/4 inset-0  bg-white items-center h-1/2 w-1/2 z-50">
-						Employee Info
-					</div>
-				</div>
-			)}
-			{addEmp && (
+    const handleCourseSelection = async (courseId) => {
+        setSelectedCourse(courseId);
+        // Fetch performance metrics for selected course and employee if needed
+    };
+
+    const handleEmpInfoClose = () => {
+        setEmpInfo(false);
+        setSelectedCourse(null);
+    };
+
+    return (
+        <div className="w-full h-full relative bg-blue-50">
+            {empInfo && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="absolute left-1/4 top-1/4 inset-0 bg-white items-center h-1/2 w-1/2 z-50 p-6">
+                        <RxCross2
+                            className="absolute right-3 top-3 cursor-pointer text-blue-400 hover:text-blue-600 text-2xl"
+                            onClick={handleEmpInfoClose}
+                        />
+                        <h1 className="font-bold text-3xl text-blue-900">
+                            Employee Information
+                        </h1>
+                        <div className="flex mt-4">
+                            {/* Dropdown for courses */}
+                            <div className="w-1/2">
+                                <label className="block text-blue-800 font-semibold mb-2">Select Course</label>
+                                <select
+                                    className="w-full p-2 border border-blue-300 rounded"
+                                    value={selectedCourse}
+                                    onChange={(e) => handleCourseSelection(e.target.value)}
+                                >
+                                    <option value="">Select Course</option>
+                                    {courses.map(course => (
+                                        <option key={course._id} value={course._id}>
+                                            {course.course_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Metrics display */}
+                            <div className="w-1/2 pl-4">
+                                <h2 className="font-semibold text-lg text-blue-900 mb-4">Performance Metrics</h2>
+                                <p><strong>Quiz Score:</strong> {metrics.quiz_score}</p>
+                                <p><strong>Discipline:</strong> {metrics.discipline}</p>
+                                <p><strong>Punctuality:</strong> {metrics.punctuality}</p>
+                                <p><strong>Teamwork:</strong> {metrics.teamwork}</p>
+                                <p><strong>Communication:</strong> {metrics.communication}</p>
+                                <p><strong>Problem Solving:</strong> {metrics.problem_solving}</p>
+                                <p><strong>Retention Score:</strong> {metrics.retention_score}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+           {addEmp && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
 					<form
 						className="w-full max-w-lg relative bg-white p-6 rounded-lg shadow-xl"
@@ -188,7 +237,7 @@ function Employee() {
 											}
 											value={employeeData[field]}
 											onChange={handleChange}
-											placeholder={`Enter ${field.replace("_", " ")}`}
+											
 										/>
 									</div>
 								)
@@ -237,104 +286,59 @@ function Employee() {
 					</Button>
 				</div>
 
-				<div className="bg-white rounded-lg shadow-lg overflow-hidden">
-					<div className="p-6">
-						<DataTable
-							value={users}
-							paginator
-							rows={5}
-							rowsPerPageOptions={[5, 10, 25, 50]}
-							className="p-datatable-sm"
-							globalFilter={globalFilter}
-							header={header}
-							emptyMessage="No employees found."
-							rowHover
-							removableSort
-							stripedRows
-							rowClassName={() =>
-								"hover:bg-blue-50 transition-colors duration-200"
-							}
-						>
-							<Column
-								field="name"
-								header="Name"
-								sortable
-								filter
-								filterPlaceholder="Search by name"
-								className="text-blue-900"
-								headerClassName="bg-blue-100 text-blue-800"
-							/>
-							<Column
-								field="email"
-								header="Email"
-								sortable
-								filter
-								filterPlaceholder="Search by email"
-								className="text-blue-900"
-								headerClassName="bg-blue-100 text-blue-800"
-							/>
-							<Column
-								field="phone_num"
-								header="Phone Number"
-								className="text-blue-900"
-								headerClassName="bg-blue-100 text-blue-800"
-							/>
-							<Column
-								field="designation"
-								header="Designation"
-								sortable
-								filter
-								filterPlaceholder="Search by designation"
-								className="text-blue-900"
-								headerClassName="bg-blue-100 text-blue-800"
-							/>
-							<Column
-								field="hire_date"
-								header="Joining Date"
-								sortable
-								className="text-blue-900"
-								headerClassName="bg-blue-100 text-blue-800"
-							/>
-							<Column
-								body={buttonBodyTemplate}
-								header="Actions"
-								onClick={handleEmpInfo}
-								headerClassName="bg-blue-100 text-blue-800"
-								bodyClassName="text-center"
-								style={{ width: "100px" }}
-							/>
-						</DataTable>
-					</div>
-				</div>
-			</div>
 
-			<style jsx>{`
-				:global(.p-datatable .p-datatable-thead > tr > th) {
-					background-color: #dbeafe !important;
-					color: #1e40af !important;
-				}
-				:global(.p-datatable .p-datatable-tbody > tr) {
-					background-color: #ffffff;
-				}
-				:global(.p-datatable .p-datatable-tbody > tr:nth-child(even)) {
-					background-color: #f0f9ff;
-				}
-				:global(.p-paginator) {
-					background-color: #dbeafe !important;
-				}
-				:global(.p-button.p-button-text) {
-					color: #2563eb !important;
-				}
-				:global(.p-button.p-button-text:hover) {
-					background-color: #bfdbfe !important;
-				}
-				:global(.p-inputtext:focus) {
-					border-color: #93c5fd !important;
-					box-shadow: 0 0 0 2px #bfdbfe !important;
-				}
-			`}</style>
-		</div>
-	);
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div className="p-6">
+                        <DataTable
+                            value={users}
+                            paginator
+                            rows={5}
+                            rowsPerPageOptions={[5, 10, 25, 50]}
+                            className="p-datatable-sm"
+                            globalFilter={globalFilter}
+                            header={header}
+                            emptyMessage="No employees found."
+                            rowHover
+                            removableSort
+                            stripedRows
+                            rowClassName={() => "hover:bg-blue-50 transition-colors duration-200"}
+                        >
+                            <Column
+                                field="name"
+                                header="Name"
+                                sortable
+                                className="text-lg font-medium text-blue-900"
+                            />
+                            <Column
+                                field="email"
+                                header="Email"
+                                sortable
+                                className="text-lg text-blue-900"
+                            />
+                            <Column
+                                field="phone_num"
+                                header="Phone"
+                                sortable
+                                className="text-lg text-blue-900"
+                            />
+                            <Column
+                                field="designation"
+                                header="Designation"
+                                sortable
+                                className="text-lg text-blue-900"
+                            />
+                            <Column
+                                header="Edit"
+                                body={buttonBodyTemplate}
+                                exportable={false}
+                                style={{ textAlign: 'center', width: '4em' }}
+                            />
+                        </DataTable>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
-export default Employee
+export default Employee;
