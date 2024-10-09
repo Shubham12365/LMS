@@ -6,18 +6,38 @@ export const GetAllPerformanceMetrics = async (req, res) => {
 
 		console.log("idf  " , req.query);
 		// console.log("idf  ");
-		const { employee_id, course_id } = req.query;
+		const { empId, courseId } = req.query;
 
-		console.log("Received employee_id:", employee_id, "course_id:", course_id);
+		console.log("Received employee_id:", empId, "course_id:", courseId);
 
-		if (!employee_id || !course_id) {
+		if (!empId || !courseId) {
 			return res
 				.status(400)
 				.json({ message: "employee_id and course_id are required." });
 		}
 
 		// Find a performance metric entry matching both employee_id and course_id
-		const flag = await PerformanceMetric.findOne({ employee_id, course_id });
+		const flag = await PerformanceMetric.findOne({ employee_id: empId, course_id: courseId });
+
+		if (flag) {
+			// If the entry exists, respond with 'Found'
+			return res.json({ message: "Found", data: flag });
+		} else {
+			// If the entry does not exist, respond with 'Not Found'
+			return res.json({ message: "Not Found" });
+		}
+	} catch (err) {
+		return res.status(500).json({ message: err.message });
+	}
+};
+export const GetAllPerformanceMetricbyEmp = async (req, res) => {
+	console.log("heekk ")
+	try {
+		
+		const course_id = req.query.course_id;
+		
+		// Find a performance metric entry matching both employee_id and course_id
+		const flag = await PerformanceMetric.find({course_id});
 
 		if (flag) {
 			// If the entry exists, respond with 'Found'

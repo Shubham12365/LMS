@@ -20,3 +20,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.active{
+  background-color: #0284c7;
+  color:#fff;
+  border-radius: 4px;
+}
+.active:hover{
+  background-color: #0284c7 !important;
+}

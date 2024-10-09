@@ -10,8 +10,10 @@ import { InputText } from 'primereact/inputtext';
 // Add these imports for PrimeReact styling
 import "primereact/resources/themes/lara-light-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
+import { FaInfoCircle } from 'react-icons/fa';
 
 function Employee() {
+    const [empId , setEmpId] = useState(false);
     const [addEmp, setAddEmp] = useState(false);
     const [totalEmp, setTotalEmployee] = useState(0);
     const [totalCourse, setTotalCourse] = useState(0);
@@ -100,7 +102,7 @@ function Employee() {
     }, []);
 
     const handleEdit = async (rowData) => {
-        const empId = rowData._id;
+        setEmpId(rowData._id);
         console.log("Editing employee:", empId);
         try {
             const response = await axios.get(
@@ -118,11 +120,10 @@ function Employee() {
 
     const buttonBodyTemplate = (rowData) => {
         return (
-            <Button
-                icon="pi pi-pencil"
-                className="p-button-rounded p-button-text bg-fuchsia-500"
-                onClick={() => handleEdit(rowData)}
-            />
+<FaInfoCircle  onClick={() => handleEdit(rowData)}/>
+            
+               
+        
         );
     };
 
@@ -146,7 +147,42 @@ function Employee() {
     const header = renderHeader();
 
     const handleCourseSelection = async (courseId) => {
+        console.log("Course selected " , courseId , " Emp id " , empId)
         setSelectedCourse(courseId);
+        const empData = {
+            empId , courseId
+        }
+        try {
+            const response = await axios.get(
+                `http://localhost:4000/api/v1/PerformanceMetricRoutes` , { params: empData }
+            );
+            console.log("Res ", response.data.data);
+           
+            if (response.data.data != undefined) {
+                // Use setMetrics to update the state
+                setMetrics({
+                  quiz_score: response.data.data.quiz_score,
+                  discipline: response.data.data.behavioral_metrics.discipline,
+                  punctuality: response.data.data.behavioral_metrics.punctuality,
+                  teamwork: response.data.data.behavioral_metrics.teamwork,
+                  communication: response.data.data.behavioral_metrics.communication,
+                  problem_solving: response.data.data.behavioral_metrics.problem_solving,
+                  retention_score: 0
+                });
+              } else {
+                setMetrics({
+                  quiz_score: 0,
+                  discipline: 0,
+                  punctuality: 0,
+                  teamwork: 0,
+                  communication: 0,
+                  problem_solving: 0,
+                  retention_score: 0
+                });
+              }
+        } catch (err) {
+            console.log("Error:", err);
+        }
         // Fetch performance metrics for selected course and employee if needed
     };
 
@@ -178,7 +214,7 @@ function Employee() {
                                 >
                                     <option value="">Select Course</option>
                                     {courses.map(course => (
-                                        <option key={course._id} value={course._id}>
+                                        <option key={course._id} value={course._id} >
                                             {course.course_name}
                                         </option>
                                     ))}

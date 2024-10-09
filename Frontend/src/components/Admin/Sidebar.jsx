@@ -5,13 +5,15 @@ import { FaBookReader } from "react-icons/fa";
 import { PiUsersThree } from "react-icons/pi";
 import { IoIosLogOut } from "react-icons/io";
 
-function Sidebar({ onSelectComponent }) {
+function Sidebar({ activeComponent, onSelectComponent }) {
 	return (
-		<div className="w-80 h-screen text-black p-4">
+		<div className="w-80 h-screen text-black p-4 border-r shadow-lg">
 			<h1 className="text-3xl font-bold mb-4">LMS</h1>
 			<div className="text-xl justify-center mt-9 flex flex-col space-y-3">
 				<li
-					className="list-none hover:text-gray-300 hover:bg-blue-500 hover:rounded-2xl cursor-pointer flex items-center space-x-2 p-2"
+					className={`list-none hover:text-white hover:bg-blue-300 hover:rounded cursor-pointer flex items-center space-x-2 p-2 ${
+						activeComponent === "Dashboard" ? "active" : ""
+					}`}
 					onClick={() => onSelectComponent("Dashboard")}
 				>
 					<MdDashboard />
@@ -19,7 +21,9 @@ function Sidebar({ onSelectComponent }) {
 				</li>
 
 				<li
-					className="list-none hover:text-gray-300 hover:bg-blue-500 hover:rounded-2xl cursor-pointer flex items-center space-x-2 p-2"
+					className={`list-none hover:text-white hover:bg-blue-300 hover:rounded cursor-pointer flex items-center space-x-2 p-2 ${
+						activeComponent === "Employees" ? "active" : ""
+					}`}
 					onClick={() => onSelectComponent("Employees")}
 				>
 					<FaRegUser />
@@ -27,7 +31,9 @@ function Sidebar({ onSelectComponent }) {
 				</li>
 
 				<li
-					className="list-none hover:text-gray-300 hover:bg-blue-500 hover:rounded-2xl cursor-pointer flex items-center space-x-2 p-2"
+					className={`list-none hover:text-white hover:bg-blue-300 hover:rounded cursor-pointer flex items-center space-x-2 p-2 ${
+						activeComponent === "Trainers" ? "active" : ""
+					}`}
 					onClick={() => onSelectComponent("Trainers")}
 				>
 					<PiUsersThree />
@@ -35,20 +41,19 @@ function Sidebar({ onSelectComponent }) {
 				</li>
 
 				<li
-					className="list-none hover:text-gray-300 hover:bg-blue-500 hover:rounded-2xl cursor-pointer flex items-center space-x-2 p-2"
+					className={`list-none hover:text-white hover:bg-blue-300 hover:rounded cursor-pointer flex items-center space-x-2 p-2 ${
+						activeComponent === "Courses" ? "active" : ""
+					}`}
 					onClick={() => onSelectComponent("Courses")}
 				>
 					<FaBookReader />
 					<span>Courses</span>
 				</li>
 			</div>
-			<button
-				className="mt-80 h-10 w-44 ml-1 text-xl bg-blue-200 rounded-md hover:text-gray-300 cursor-pointer flex items-center justify-center space-x-2 p-2 "
-				onClick={() => onSelectComponent("Logout")}
-			>
-				<span>LogOut</span>
-				<IoIosLogOut />
-			</button>
+
+			<p className="bg-[#0284c7] absolute bottom-8 left-16 cursor-pointer flex text-white rounded-sm py-2 px-4">
+				Logout <IoIosLogOut className="text-xl ml-4" />
+			</p>
 		</div>
 	);
 }

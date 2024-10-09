@@ -12,7 +12,7 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    
+    console.log("trying to loggin ")
     if (!email || !password) {
       setError('Please fill in all fields');
       return;

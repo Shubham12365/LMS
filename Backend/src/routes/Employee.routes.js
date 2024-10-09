@@ -1,7 +1,7 @@
 import express from "express";
 
 const router = express.Router();
-import {GetAllEmployees,CreateEmployee, GetAllEmployeesById } from "../controllers/Employee.controllers.js"
+import {GetAllEmployees , EmployeeLogin,CreateEmployee, GetAllEmployeesById } from "../controllers/Employee.controllers.js"
 
 
 
@@ -10,6 +10,7 @@ import {GetAllEmployees,CreateEmployee, GetAllEmployeesById } from "../controlle
 router.get('/', GetAllEmployees);
 router.get('/this/', GetAllEmployeesById);
 router.post('/', CreateEmployee);
+router.post('/login', EmployeeLogin);
 // Add routes for update and delete
 
 export default router;

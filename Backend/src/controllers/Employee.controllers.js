@@ -6,47 +6,12 @@ import Employee from "../models/Employee.model.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 
-export const registerEmp = async (req, res) => {
 
 
-    const { name, email, password, phone_num, designation, hire_date } = req.body;
-
-    try {
-        const existingUser = await Employee.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists with this email.' });
-        }
-
-        // Hash the password before saving it to the database
-        const hashedPassword = await bcrypt.hash(password, bcrypt.genSalt(10));
-
-        // Create new user
-        const newUser = new Employee({
-            name,
-            email,
-            password: hashedPassword, // Store the hashed password
-            phone_num,
-            designation,
-            hire_date
-        });
-
-        // Save user to the database
-        await newUser.save();
-
-        // Return a successful response
-        return res.status(201).json({ message: 'User registered successfully', user: newUser });
-    } catch (error) {
-        console.error('Error registering user:', error);
-        return res.status(500).json({ message: 'Internal server error', error: error.message });
-    }
-};
-
-
-
-
-export const loginUser = async (req, res) => {
+export const EmployeeLogin = async (req, res) => {
     const { email, password } = req.body;
 
+    console.log("Hell o ",  req.body);
     // Step 1: Validations
     if (!email || !password) {
         return res.status(400).json({ message: 'Email and password are required.' });
@@ -121,25 +86,36 @@ export const GetAllEmployeesById = async (req, res) => {
 export const CreateEmployee = async (req, res) => {
 	const { name, email, password, phone_num , designation, hire_date } =
 		req.body;
-  
-	try {
-		const newEmployee = new Employee({
-			name,
-			email,
-			password, 
-			phone_num,
-			designation,
-			hire_date,
-			
-		});
+    console.log("hskjfhdsk")
+        try {
+            const existingUser = await Employee.findOne({ email });
+            if (existingUser) {
+                return res.status(400).json({ message: 'User already exists with this email.' });
+            }
+    
+            // Hash the password before saving it to the database
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
 
-		const savedEmployee = await newEmployee.save();
-		console.log("saved", savedEmployee);
-		res.status(201).json(savedEmployee);
-	} catch (err) {
-		console.error("Error creating employee:", err);
-		res.status(400).json({ message: err.message, details: err.errors });
-	}
+            // Create new user
+            const newUser = new Employee({
+                name,
+                email,
+                password: hashedPassword, // Store the hashed password
+                phone_num,
+                designation,
+                hire_date
+            });
+    
+            // Save user to the database
+            await newUser.save();
+    
+            // Return a successful response
+            return res.status(201).json({ message: 'User registered successfully', user: newUser });
+        } catch (error) {
+            console.error('Error registering user:', error);
+            return res.status(500).json({ message: 'Internal server error', error: error.message });
+        }
 };
 
 // Additional methods: updateEmployee, deleteEmployee, etc.
